@@ -1,15 +1,16 @@
 package com.IAS.calculadoraTecnico.service;
 
 import com.IAS.calculadoraTecnico.Domain.Servicio;
+import com.IAS.calculadoraTecnico.Domain.Tecnico;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ServicioService {
     public Servicio createServicio (Servicio servicio);
-    public Servicio BuscarServicio (Long id);
-    public List<Servicio> buscarServiciosPorMesTecnico(Long cedulaTecnico, Long mes);
-    public List<Servicio> calcularServiciosTecnicoporMes(Long cedulaTecnico,Long mesIni, Long mesFin);
-    public Servicio updateServicio (Servicio servicio);
+
+    public List<Servicio> findByTecnico (Optional<Tecnico> tecnico);
+
 }
-}
+
 

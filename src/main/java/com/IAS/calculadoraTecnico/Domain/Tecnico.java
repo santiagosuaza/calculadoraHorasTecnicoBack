@@ -27,9 +27,8 @@ public class Tecnico {
     private Double horaValor;
 
 
-    @JsonManagedReference
     @OneToMany(mappedBy = "tecnico", orphanRemoval = true)
-    private List<Servicio> servicios =new ArrayList<>();
+   private List<Servicio> servicios ;
 
 
 }
