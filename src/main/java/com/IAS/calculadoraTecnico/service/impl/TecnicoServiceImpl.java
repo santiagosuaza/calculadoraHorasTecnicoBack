@@ -22,17 +22,19 @@ public class TecnicoServiceImpl implements TecnicoService {
     @Autowired
     ServicioService servicioService;
     TrabajosSemanaTecnico trabajosSemanaTecnico = new TrabajosSemanaTecnico();
-    int horasSemanaNormales ;
-    int horasDominicales ;
-    int horasNocturnas ;
-    int horasExtraNormales ;
-    int horasExtraDominicales ;
+    int horasSemanaNormales;
+    int horasDominicales;
+    int horasNocturnas;
+    int horasExtraNormales;
+    int horasExtraDominicales;
     boolean flag = true;
     int maxHor = 48;
     int contHorasPorServicio = 0;
 
-    Calendar calendarDiaIni = Calendar.getInstance();;
-    Calendar calendarDiaFin = Calendar.getInstance();;
+    Calendar calendarDiaIni = Calendar.getInstance();
+    ;
+    Calendar calendarDiaFin = Calendar.getInstance();
+    ;
 
     Calendar calendarDiaCont = Calendar.getInstance();
     Date diaContador;
@@ -56,7 +58,7 @@ public class TecnicoServiceImpl implements TecnicoService {
         horasDominicales = 0;
         horasNocturnas = 0;
         horasExtraNormales = 0;
-      horasExtraDominicales = 0;
+        horasExtraDominicales = 0;
         ArrayList<Servicio> serviciosTecnico = new ArrayList<Servicio>();
         serviciosTecnico = (ArrayList<Servicio>) servicioService.findByTecnico(tecnicoRepository.findById(idTecnico));
 
@@ -64,7 +66,7 @@ public class TecnicoServiceImpl implements TecnicoService {
         for (Servicio s : serviciosTecnico) {
             calendarDiaIni.setTime(s.getFechaInicial());
             calendarDiaFin.setTime(s.getFechaFinal());
-            if (calendarDiaIni.get(Calendar.WEEK_OF_YEAR) == numSemana  && numSemana  == calendarDiaFin.get(Calendar.WEEK_OF_YEAR)) {
+            if (calendarDiaIni.get(Calendar.WEEK_OF_YEAR) == numSemana && numSemana == calendarDiaFin.get(Calendar.WEEK_OF_YEAR)) {
                 fechaFini = s.getFechaFinal();
                 fechaIni = s.getFechaInicial();
                 diaContador = fechaIni;
@@ -99,14 +101,19 @@ public class TecnicoServiceImpl implements TecnicoService {
     public void calcularTiemposEntreDias(Date fecha, int horaFin, Calendar fechaConsultar) {
         if (fechaConsultar.get(Calendar.DAY_OF_WEEK) != 1) {
             if (horaFin != 24) {
-                horasSemanaNormales = horasSemanaNormales + ((fecha.getHours()) - (fecha.getHours() - 7));
-                horasNocturnas = horasNocturnas + (fecha.getHours() - ((20 - fecha.getHours()) + fecha.getHours() - 7));
+
+                if (fecha.getHours() > 7){
+                    horasNocturnas = horasNocturnas + 7;
+                horasSemanaNormales = horasSemanaNormales + (fecha.getHours() - 7);
             } else {
-                horasSemanaNormales = horasSemanaNormales + (20 - fecha.getHours());
+                    horasNocturnas = horasNocturnas+fecha.getHours();
+                }
+
+            } else {
+                horasSemanaNormales = horasSemanaNormales + (20-fecha.getHours());
                 horasNocturnas = horasNocturnas + (24 - 20 - fecha.getHours());
             }
-        }
-        if (fechaConsultar.get(Calendar.DAY_OF_WEEK) == 1) {
+        } else {
             if (horaFin != 24) {
                 horasDominicales = horasDominicales + fecha.getHours();
             } else {
