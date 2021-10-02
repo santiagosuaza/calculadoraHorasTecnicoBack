@@ -3,6 +3,7 @@ package com.IAS.calculadoraTecnico.Domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,8 +17,8 @@ public class Servicio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDateTime fechaInicial;
-    private LocalDateTime fechaFinal;
+    private java.util.Date fechaInicial;
+    private java.util.Date fechaFinal;
     @ManyToOne
     @JoinColumn(name = "tecnico_id")
     private Tecnico tecnico;

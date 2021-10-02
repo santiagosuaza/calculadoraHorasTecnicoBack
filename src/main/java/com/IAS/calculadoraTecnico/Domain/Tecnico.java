@@ -1,10 +1,7 @@
 package com.IAS.calculadoraTecnico.Domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,7 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_tecnico")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

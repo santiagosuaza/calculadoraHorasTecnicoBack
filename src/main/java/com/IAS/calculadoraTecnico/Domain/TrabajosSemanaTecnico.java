@@ -1,8 +1,12 @@
 package com.IAS.calculadoraTecnico.Domain;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+
+@Getter
+@Setter
 public class TrabajosSemanaTecnico {
     Long idTecnico;
     int horasSemanaNormales;
@@ -10,5 +14,6 @@ public class TrabajosSemanaTecnico {
     int horasExtraNormales;
     int horasDominicales;
 
-
+    public TrabajosSemanaTecnico() {
+    }
 }
