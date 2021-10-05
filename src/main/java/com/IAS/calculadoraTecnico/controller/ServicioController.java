@@ -21,6 +21,9 @@ public class ServicioController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Servicio> createCargo(@RequestBody Servicio servicio){
         return ResponseEntity.ok().body(servicioService.createServicio(servicio));
+
+
+
     }
 
 }

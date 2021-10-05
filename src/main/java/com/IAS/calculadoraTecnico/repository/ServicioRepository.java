@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface ServicioRepository extends JpaRepository<Servicio,Long> {
     public List<Servicio> findByTecnico(Optional<Tecnico> tecnico);
 
+
 }
 

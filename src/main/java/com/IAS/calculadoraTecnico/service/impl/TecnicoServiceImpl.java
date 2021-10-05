@@ -72,17 +72,17 @@ public class TecnicoServiceImpl implements TecnicoService {
                 diaContador = fechaIni;
                 contDias = (fechaFini.getDay() - fechaIni.getDay());
                 if (contDias != 0) {
-                    for (int i = 1; i <= contDias; ++i) {
-                        if (i == 1) {
+                    for (int i = 0; i <= contDias; i++) {
+                        if (i == 0) {
+                            calcularTiemposEntreDias(fechaIni, false, calendarDiaIni);
 
-                            calcularTiemposEntreDias(fechaIni, 24, calendarDiaIni);
-                            contHorasPorServicio = contHorasPorServicio + (24 - fechaIni.getHours());
                         }
-                        if (i == contDias) {
-                            calcularTiemposEntreDias(fechaFini, fechaFini.getHours(), calendarDiaFin);
-                            contHorasPorServicio = contHorasPorServicio + fechaFini.getHours();
+                       else if (i == contDias) {
+                            calcularTiemposEntreDias(fechaFini, true, calendarDiaFin);
+                        } else {
+                            horasSemanaNormales = horasSemanaNormales + 13;
+                            horasNocturnas = horasNocturnas + 11;
                         }
-                        contHorasPorServicio = contHorasPorServicio + 24;
                     }
                 } else {
                     calcularTimposElMismoDia(fechaIni, fechaFini, calendarDiaFin);
@@ -91,6 +91,12 @@ public class TecnicoServiceImpl implements TecnicoService {
             }
 
         }
+        if(contHorasPorServicio>48){
+            horasExtraDominicales=48-horasDominicales;
+            horasDominicales=48;
+            horasExtraNormales=48-horasDominicales;
+            horasDominicales=48;
+        }
         trabajosSemanaTecnico.setIdTecnico(idTecnico);
         trabajosSemanaTecnico.setHorasSemanaNormales(horasSemanaNormales);
         trabajosSemanaTecnico.setHorasNocturnas(horasNocturnas);
@@ -98,55 +104,65 @@ public class TecnicoServiceImpl implements TecnicoService {
         return trabajosSemanaTecnico;
     }
 
-    public void calcularTiemposEntreDias(Date fecha, int horaFin, Calendar fechaConsultar) {
+    public void calcularTiemposEntreDias(Date fecha, boolean ultimoDia, Calendar fechaConsultar) {
         if (fechaConsultar.get(Calendar.DAY_OF_WEEK) != 1) {
-            if (horaFin != 24) {
-
-                if (fecha.getHours() > 7){
-                    horasNocturnas = horasNocturnas + 7;
-                horasSemanaNormales = horasSemanaNormales + (fecha.getHours() - 7);
-            } else {
-                    horasNocturnas = horasNocturnas+fecha.getHours();
+            if (!ultimoDia) {
+                if (fecha.getHours() >= 7) {
+                    horasNocturnas = horasNocturnas + 4;
+                    horasSemanaNormales = horasSemanaNormales + (20 - fecha.getHours());
+                    contHorasPorServicio=contHorasPorServicio+horasNocturnas+horasSemanaNormales;
+                } else {
+                    horasNocturnas = horasNocturnas + (7 - fecha.getHours()) + 4;
+                    horasSemanaNormales = horasSemanaNormales + 13;
+                    contHorasPorServicio=contHorasPorServicio+horasNocturnas+horasSemanaNormales;
                 }
-
             } else {
-                horasSemanaNormales = horasSemanaNormales + (20-fecha.getHours());
-                horasNocturnas = horasNocturnas + (24 - 20 - fecha.getHours());
+                if (fecha.getHours() < 7) {
+                    horasNocturnas = horasNocturnas + fecha.getHours();
+                    contHorasPorServicio=contHorasPorServicio+horasNocturnas;
+                } else if(fecha.getHours() < 20){
+                    horasNocturnas = horasNocturnas + 7;
+                    horasSemanaNormales = horasSemanaNormales + (fecha.getHours()-7);
+                    contHorasPorServicio=contHorasPorServicio+horasNocturnas+horasSemanaNormales;
+                }else {
+                    horasNocturnas = horasNocturnas + 7 + (24 - fecha.getHours());
+                    horasSemanaNormales = horasSemanaNormales + 13;
+                    contHorasPorServicio=contHorasPorServicio+horasNocturnas+horasSemanaNormales;
+                }
             }
         } else {
-            if (horaFin != 24) {
-                horasDominicales = horasDominicales + fecha.getHours();
-            } else {
-                horasDominicales = horasDominicales + (24 - fecha.getHours());
-            }
-
+            horasDominicales = horasDominicales + fecha.getHours();
+            contHorasPorServicio=contHorasPorServicio+horasDominicales;
         }
+
         horasExtraNormales = horasExtraNormales + (horasDominicales - 48);
         horasExtraDominicales = horasExtraNormales - (48 - horasDominicales);
         horasDominicales = horasDominicales - horasExtraDominicales;
+        contHorasPorServicio=contHorasPorServicio+horasNocturnas+horasSemanaNormales+horasDominicales;
+
     }
 
-    public void calcularTimposElMismoDia(Date fecha1, Date fecha2, Calendar calendarDiaI) {
-        if (calendarDiaI.get(Calendar.DAY_OF_WEEK) != 7) {
-            if (7 <= fecha1.getHours() && 20 >= fecha1.getHours() && 7 <= fecha2.getHours() && 20 >= fecha2.getHours()) {
-                horasSemanaNormales = horasSemanaNormales + (fecha2.getHours() - fecha1.getHours());
+    public void calcularTimposElMismoDia(Date fechaIni, Date fechaFinal, Calendar calendarDiaI) {
+        if (calendarDiaI.get(Calendar.DAY_OF_WEEK) != 1) {
+            if (7 <= fechaIni.getHours() && 20 >= fechaIni.getHours() && 7 <= fechaFinal.getHours() && 20 >= fechaFinal.getHours()) {
+                horasSemanaNormales = horasSemanaNormales + (fechaFinal.getHours() - fechaIni.getHours());
             }
-            if (7 > fecha1.getHours() && 7 <= fecha2.getHours() && 20 >= fecha2.getHours()) {
-                horasSemanaNormales = horasSemanaNormales + (fecha2.getHours() - 7) + (7 - fecha1.getHours());
+            if (7 > fechaIni.getHours() && 7 <= fechaFinal.getHours() && 20 >= fechaFinal.getHours()) {
+                horasSemanaNormales = horasSemanaNormales + (fechaFinal.getHours() - 7) + (7 - fechaIni.getHours());
+                horasExtraNormales=horasExtraNormales+(7-fechaIni.getHours());
             }
-            if (7 > fecha1.getHours() && 20 < fecha2.getHours()) {
+            if (7 > fechaIni.getHours() && 20 < fechaFinal.getHours()) {
                 horasSemanaNormales = horasSemanaNormales + 8;
-                horasExtraNormales = (7 - fecha1.getHours()) + (24 - fecha2.getHours());
+                horasExtraNormales =  horasExtraNormales+(7 - fechaIni.getHours()) + (24 - fechaFinal.getHours());
             }
 
 
-            if (7 <= fecha1.getHours() && 20 >= fecha1.getHours() && 7 <= fecha2.getHours() && 20 >= fecha2.getHours()) {
-                horasSemanaNormales = horasSemanaNormales + (20 - fecha1.getHours());
-                horasExtraNormales = horasExtraNormales + (24 - fecha2.getHours());
+            if (7 <= fechaIni.getHours() && 20 >= fechaIni.getHours() &&  20 <fechaFinal.getHours()) {
+                horasSemanaNormales = horasSemanaNormales + (20 - fechaIni.getHours());
+                horasExtraNormales = horasExtraNormales + (24 - fechaFinal.getHours());
             }
-        }
-        if (calendarDiaI.get(Calendar.DAY_OF_WEEK) == 7) {
-            horasDominicales = horasDominicales + fecha1.getHours() + fecha2.getHours();
+        }else{
+            horasDominicales = horasDominicales +( fechaFinal.getHours() - fechaIni.getHours());
         }
     }
 
