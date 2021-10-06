@@ -12,13 +12,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "tbl_tecnico")
-@AllArgsConstructor
+@AllArgsConstructor+
 @NoArgsConstructor
 @Builder
 public class Tecnico {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tecnico_id")
     private Long id;
 
     private String nombre;
